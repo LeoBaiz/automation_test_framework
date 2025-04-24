@@ -1,0 +1,23 @@
+# Entorno virtual
+.venv/
+env/
+ENV/
+
+# PyCharm
+.idea/
+
+# Cache de Python
+__pycache__/
+*.py[cod]
+*.so
+
+# Reportes y logs
+reports/
+*.log
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Configs locales
+*.env
