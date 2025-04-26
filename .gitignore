@@ -21,3 +21,4 @@ Thumbs.db
 
 # Configs locales
 *.env
+/conftestViejo.txt
