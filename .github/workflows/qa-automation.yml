@@ -24,12 +24,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # 4️⃣ Configurar Chrome y ChromeDriver
-      - name: Set up Chrome
-        uses: browser-actions/setup-chrome@v1
+      # 4️⃣ Configurar Chrome y ChromeDriver (versión específica)
+      - name: Setup Chrome and ChromeDriver
+        uses: nanasess/setup-chromedriver@v2
         with:
-          chrome-version: 'latest'
-          install-chromedriver: true
+          chromedriver-version: 'latest'
 
       # 5️⃣ Configurar entorno para pruebas headless
       - name: Start Xvfb for headless testing
@@ -42,13 +41,16 @@ jobs:
         run: |
           pytest -v --alluredir=allure-results
         env:
-          SELENIUM_HEADLESS: 'true'  # Compatible con tu fixture si lo haces configurable
+          SELENIUM_HEADLESS: 'true'
 
-      # 7️⃣ Instalar Allure
-      - name: Install Allure
+      # 7️⃣ Configurar Allure
+      - name: Setup Allure
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Install Allure CLI
         run: |
-          sudo apt-get update
-          sudo apt-get install -y default-jre
           wget https://github.com/allure-framework/allure2/releases/download/2.34.0/allure-2.34.0.tgz
           tar -xzf allure-2.34.0.tgz
           sudo mv allure-2.34.0 /usr/local/allure
@@ -58,6 +60,7 @@ jobs:
       - name: Generate Allure Report
         run: |
           allure generate allure-results --clean -o allure-report
+        if: always()  # Generar reporte incluso si las pruebas fallan
 
       # 9️⃣ Subir el reporte a GitHub Pages
       - name: Deploy Allure Report to GitHub Pages
@@ -65,4 +68,5 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./allure-report
-          keep_files: false  # Limpiar archivos antiguos en GitHub Pages
+          keep_files: false
+        if: always()  # Subir reporte incluso si las pruebas fallan
