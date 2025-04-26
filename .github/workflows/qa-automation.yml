@@ -43,7 +43,7 @@ jobs:
           fi
           google-chrome --version
 
-      # 5️⃣ Instalar ChromeDriver compatible
+            # 5️⃣ Instalar ChromeDriver compatible
       - name: Install ChromeDriver
         run: |
           CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d. -f1-3)
@@ -52,12 +52,16 @@ jobs:
             exit 1
           fi
           echo "Chrome version: $CHROME_VERSION"
-          CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
+          
+          #Obtener la versión de ChromeDriver compatible desde chrome-for-testing
+          CHROMEDRIVER_VERSION=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_$CHROME_VERSION")
           if [ -z "$CHROMEDRIVER_VERSION" ]; then
             echo "Error: No se pudo obtener la versión de ChromeDriver para Chrome $CHROME_VERSION"
             exit 1
           fi
           echo "ChromeDriver version: $CHROMEDRIVER_VERSION"
+          
+          # Descargar ChromeDriver desde el nuevo repositorio
           wget -q "https://storage.googleapis.com/chrome-for-testing-public/$CHROMEDRIVER_VERSION/linux64/chromedriver-linux64.zip"
           unzip chromedriver-linux64.zip
           sudo mv chromedriver-linux64/chromedriver /usr/local/bin/chromedriver
