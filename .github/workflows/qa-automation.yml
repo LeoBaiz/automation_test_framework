@@ -43,7 +43,7 @@ jobs:
           fi
           google-chrome --version
 
-            # 5️⃣ Instalar ChromeDriver compatible
+        # 5️⃣ Instalar ChromeDriver compatible
       - name: Install ChromeDriver
         run: |
           CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d. -f1-3)
@@ -83,27 +83,31 @@ jobs:
         env:
           SELENIUM_HEADLESS: 'true'
 
-      # 8️⃣ Configurar Allure
-      - name: Setup Allure
+      # 8️⃣ Configurar Java para Allure
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
+        if: always()  # Ejecutar siempre, incluso si las pruebas fallan
+
+      # 9️⃣ Instalar Allure CLI
       - name: Install Allure CLI
         run: |
           wget -q https://github.com/allure-framework/allure2/releases/download/2.30.0/allure-2.30.0.tgz
-          tar -xzf allure-2.30.0.tgz
-          sudo mv allure-2.30.0 /usr/local/allure
-          sudo ln -s /usr/local/allure/bin/allure /usr/local/bin/allure
+          tar -zxvf allure-2.30.0.tgz -C /usr/local
+          sudo mv /usr/local/allure-2.30.0 /usr/local/allure
+          echo "export PATH=$PATH:/usr/local/allure/bin" >> $GITHUB_ENV
           allure --version
+        if: always()  # Ejecutar siempre, incluso si las pruebas fallan
 
-      # 9️⃣ Generar reporte Allure en HTML
+      # 🔟 Generar reporte Allure en HTML
       - name: Generate Allure Report
         run: |
-          allure generate allure-results --clean -o allure-report
+          /usr/local/allure/bin/allure generate allure-results --clean -o allure-report
         if: always()
 
-      # 🔟 Subir el reporte a GitHub Pages
+      # 11️⃣ Subir el reporte a GitHub Pages
       - name: Deploy Allure Report to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
