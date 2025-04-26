@@ -1,7 +1,7 @@
 name: QA Automation Tests
 
 on:
-  workflow_dispatch:  # Ejecucion Mnaual
+  workflow_dispatch:  # Ejecución manual
 
 jobs:
   test:
@@ -24,12 +24,21 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # 4️⃣ Ejecutar pruebas con pytest y generar reportes Allure
+      # 4️⃣ Configurar y instalar Chrome y ChromeDriver
+      - name: Set up Chrome
+        uses: browser-actions/setup-chrome@v1
+
+      - name: Set up ChromeDriver
+        uses: actions/setup-chromedriver@v1
+        with:
+          chromedriver-version: 'latest'
+
+      # 5️⃣ Ejecutar pruebas con pytest (Selenium en modo headless) y generar reportes Allure
       - name: Run tests with pytest
         run: |
           pytest -v --alluredir=allure-results
 
-      # 5️⃣ Generar reporte Allure en HTML
+      # 6️⃣ Generar reporte Allure en HTML
       - name: Generate Allure Report
         run: |
           sudo apt-get install -y default-jre
@@ -37,7 +46,7 @@ jobs:
           tar -xzf allure-2.27.0.tgz
           ./allure-2.27.0/bin/allure generate allure-results --clean -o allure-report
 
-      # 6️⃣ Subir el reporte a GitHub Pages
+      # 7️⃣ Subir el reporte a GitHub Pages
       - name: Deploy Allure Report to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
