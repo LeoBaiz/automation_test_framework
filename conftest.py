@@ -27,12 +27,14 @@ def init_report_directory():
 def driver():
     # Configurar opciones para Chrome
     options = Options()
-    options.add_argument("--headless")  # Modo headless
+    if os.getenv('SELENIUM_HEADLESS', 'true').lower() == 'true':
+        options.add_argument("--headless")  # Modo headless solo si SELENIUM_HEADLESS=true
     options.add_argument("--no-sandbox")  # Necesario para entornos como GitHub Actions
     options.add_argument("--disable-dev-shm-usage")  # Evita problemas en entornos CI
     options.add_argument("--window-size=1920,1080")  # Tamaño de ventana opcional
 
-    driver = webdriver.Chrome()  # Configura tu driver según corresponda
+    # Inicializar el driver con las opciones configuradas
+    driver = webdriver.Chrome(options=options)
     yield driver
     driver.quit()
 

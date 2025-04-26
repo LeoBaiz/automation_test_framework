@@ -2,6 +2,7 @@ name: QA Automation Tests
 
 on:
   workflow_dispatch:  # Ejecución manual
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -36,19 +37,19 @@ jobs:
           sudo Xvfb :99 -ac -screen 0 1280x1024x24 &
           export DISPLAY=:99
 
-      # 6️⃣ Ejecutar pruebas con pytest (Selenium en modo headless) y generar reportes Allure
+      # 6️⃣ Ejecutar pruebas con pytest y generar reportes Allure
       - name: Run tests with pytest
         run: |
-          pytest -v --alluredir=allure-results --headless
+          pytest -v --alluredir=allure-results
         env:
-          SELENIUM_HEADLESS: 'true'
+          SELENIUM_HEADLESS: 'true'  # Compatible con tu fixture si lo haces configurable
 
       # 7️⃣ Instalar Allure
       - name: Install Allure
         run: |
           sudo apt-get update
           sudo apt-get install -y default-jre
-          wget https://github.com/allure-framework/allure2/releases/download/2.27.0/allure-2.27.0.tgz
+          wget https://github.com/allure-framework/allure2/releases/download/2.34.0/allure-2.34.0.tgz
           tar -xzf allure-2.34.0.tgz
           sudo mv allure-2.34.0 /usr/local/allure
           sudo ln -s /usr/local/allure/bin/allure /usr/local/bin/allure
