@@ -2,7 +2,6 @@ name: QA Automation Tests
 
 on:
   workflow_dispatch:  # Ejecución manual
-
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -10,13 +9,13 @@ jobs:
     steps:
       # 1️⃣ Chequear el repositorio
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # 2️⃣ Configurar Python
-      - name: Set up Python 3.13.3
-        uses: actions/setup-python@v4
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.13.3'
+          python-version: '3.13'
 
       # 3️⃣ Instalar dependencias
       - name: Install dependencies
@@ -24,31 +23,45 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # 4️⃣ Configurar y instalar Chrome y ChromeDriver
+      # 4️⃣ Configurar Chrome y ChromeDriver
       - name: Set up Chrome
         uses: browser-actions/setup-chrome@v1
-
-      - name: Set up ChromeDriver
-        uses: browser-actions/setup-chromedriver@v1
         with:
-          chromedriver-version: 'latest'
+          chrome-version: 'latest'
+          install-chromedriver: true
 
-      # 5️⃣ Ejecutar pruebas con pytest (Selenium en modo headless) y generar reportes Allure
+      # 5️⃣ Configurar entorno para pruebas headless
+      - name: Start Xvfb for headless testing
+        run: |
+          sudo Xvfb :99 -ac -screen 0 1280x1024x24 &
+          export DISPLAY=:99
+
+      # 6️⃣ Ejecutar pruebas con pytest (Selenium en modo headless) y generar reportes Allure
       - name: Run tests with pytest
         run: |
-          pytest -v --alluredir=allure-results
+          pytest -v --alluredir=allure-results --headless
+        env:
+          SELENIUM_HEADLESS: 'true'
 
-      # 6️⃣ Generar reporte Allure en HTML
+      # 7️⃣ Instalar Allure
+      - name: Install Allure
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y default-jre
+          wget https://github.com/allure-framework/allure2/releases/download/2.27.0/allure-2.27.0.tgz
+          tar -xzf allure-2.34.0.tgz
+          sudo mv allure-2.34.0 /usr/local/allure
+          sudo ln -s /usr/local/allure/bin/allure /usr/local/bin/allure
+
+      # 8️⃣ Generar reporte Allure en HTML
       - name: Generate Allure Report
         run: |
-          sudo apt-get install -y default-jre
-          wget https://github.com/allure-framework/allure2/releases/latest/download/allure-2.27.0.tgz
-          tar -xzf allure-2.27.0.tgz
-          ./allure-2.27.0/bin/allure generate allure-results --clean -o allure-report
+          allure generate allure-results --clean -o allure-report
 
-      # 7️⃣ Subir el reporte a GitHub Pages
+      # 9️⃣ Subir el reporte a GitHub Pages
       - name: Deploy Allure Report to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./allure-report
+          keep_files: false  # Limpiar archivos antiguos en GitHub Pages

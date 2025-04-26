@@ -5,6 +5,7 @@ from datetime import datetime
 from selenium import webdriver
 import allure
 from allure_commons.types import AttachmentType
+from selenium.webdriver.chrome.options import Options
 import subprocess
 
 # Variable global para almacenar la carpeta de reporte
@@ -24,6 +25,13 @@ def init_report_directory():
 # Fixture para el driver de Selenium
 @pytest.fixture
 def driver():
+    # Configurar opciones para Chrome
+    options = Options()
+    options.add_argument("--headless")  # Modo headless
+    options.add_argument("--no-sandbox")  # Necesario para entornos como GitHub Actions
+    options.add_argument("--disable-dev-shm-usage")  # Evita problemas en entornos CI
+    options.add_argument("--window-size=1920,1080")  # Tamaño de ventana opcional
+
     driver = webdriver.Chrome()  # Configura tu driver según corresponda
     yield driver
     driver.quit()
