@@ -97,17 +97,17 @@ jobs:
           wget -q https://github.com/allure-framework/allure2/releases/download/2.30.0/allure-2.30.0.tgz
           tar -zxvf allure-2.30.0.tgz
           sudo mv allure-2.30.0 /usr/local/allure
-          echo "export PATH=$PATH:/usr/local/allure/bin" >> $GITHUB_ENV
+          export PATH=$PATH:/usr/local/allure/bin
+          echo "PATH=$PATH:/usr/local/allure/bin" >> $GITHUB_ENV
           allure --version
-        if: always() # Ejecutar siempre, incluso si las pruebas fallan
-
+        if: always()
       # 🔟 Generar reporte Allure en HTML
       - name: Generate Allure Report
         run: |
           /usr/local/allure/bin/allure generate allure-results --clean -o allure-report
         if: always()
 
-      # 11️⃣ Subir el reporte a GitHub Pages
+      # 1️⃣1️⃣ Subir el reporte a GitHub Pages
       - name: Deploy Allure Report to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
