@@ -80,6 +80,7 @@ jobs:
       - name: Run tests with pytest
         run: |
           pytest -v --alluredir=allure-results
+          ls -la allure-results
         env:
           SELENIUM_HEADLESS: 'true'
 
@@ -89,7 +90,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-        if: always()  # Ejecutar siempre, incluso si las pruebas fallan
+        if: always()
 
       # 9️⃣ Instalar Allure CLI
       - name: Install Allure CLI
@@ -101,10 +102,32 @@ jobs:
           echo "PATH=$PATH:/usr/local/allure/bin" >> $GITHUB_ENV
           allure --version
         if: always()
+
       # 🔟 Generar reporte Allure en HTML
       - name: Generate Allure Report
         run: |
           /usr/local/allure/bin/allure generate allure-results --clean -o allure-report
+          ls -la allure-report
+        if: always()
+
+      # Nuevo paso: Verificar el directorio allure-report
+      - name: Check Allure Report Directory
+        run: |
+          if [ -d "allure-report" ]; then
+            echo "allure-report exists and contains:"
+            ls -la allure-report
+          else
+            echo "Error: allure-report directory does not exist"
+            exit 1
+          fi
+        if: always()
+
+      # Subir allure-report como artefacto (opcional)
+      - name: Upload Allure Report Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: allure-report/
         if: always()
 
       # 1️⃣1️⃣ Subir el reporte a GitHub Pages
@@ -114,4 +137,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./allure-report
           keep_files: false
+          publish_branch: gh-pages
+        env:
+          DEBUG: true
         if: always()
