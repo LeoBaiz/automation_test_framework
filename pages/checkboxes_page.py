@@ -1,8 +1,8 @@
 from selenium.webdriver.common.by import By
-from config.settings import BASE_URL,TIMEOUT,BROWSER
+from config.settings import BASE_URL_Stable,TIMEOUT,BROWSER
 
 class CheckboxesPage:
-    URL = f"{BASE_URL.rstrip('/')}/checkboxes"
+    URL = f"{BASE_URL_Stable.rstrip('/')}/checkboxes"
     timeout = TIMEOUT
 
     CHECKBOXES = (By.CSS_SELECTOR, "#checkboxes input")

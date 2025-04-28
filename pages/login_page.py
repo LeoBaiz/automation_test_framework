@@ -1,8 +1,8 @@
 from selenium.webdriver.common.by import By
-from config.settings import BASE_URL, BROWSER, TIMEOUT
+from config.settings import BASE_URL_Stable, BROWSER, TIMEOUT
 
 class LoginPage:
-    URL = f"{BASE_URL.rstrip('/')}/login"
+    URL = f"{BASE_URL_Stable.rstrip('/')}/login"
     t = TIMEOUT
 
     def __init__(self, driver):
