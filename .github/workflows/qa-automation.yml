@@ -2,10 +2,6 @@ name: QA Automation Tests
 
 on:
   workflow_dispatch:  # Ejecución manual
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
 
 jobs:
   test:

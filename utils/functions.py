@@ -83,3 +83,49 @@ class GlobalFunctions:
         except NoSuchElementException as ex:
             logger.error("Element not present: %s (%s)", selector, locator_type.value)
             raise ex
+
+    def input_text(self, locator_type: LocatorType, selector: str, text: str, wait_seconds: float = 0) -> None:
+        """Enter text into an input field.
+
+        Args:
+            locator_type: The type of locator (XPATH or ID).
+            selector: The selector string.
+            text: The text to input.
+            wait_seconds: Seconds to wait after input (default: 0).
+
+        Raises:
+            TimeoutException: If the element is not found.
+            ValueError: If the locator type is invalid.
+        """
+        try:
+            element = self.find_element(locator_type, selector)
+            element.clear()
+            element.send_keys(text)
+            logger.info("Entering text '%s' into element: %s (%s)", text, selector, locator_type.value)
+            if wait_seconds > 0:
+                self.wait(wait_seconds)
+        except TimeoutException as ex:
+            logger.error("Failed to input text into: %s (%s)", selector, locator_type.value)
+            raise ex
+
+    def click_element(self, locator_type: LocatorType, selector: str, wait_seconds: float = 0) -> None:
+        """Click an element.
+
+        Args:
+            locator_type: The type of locator (XPATH or ID).
+            selector: The selector string.
+            wait_seconds: Seconds to wait after clicking (default: 0).
+
+        Raises:
+            TimeoutException: If the element is not found.
+            ValueError: If the locator type is invalid.
+        """
+        try:
+            element = self.find_element(locator_type, selector)
+            element.click()
+            logger.info("Clicking element: %s (%s)", selector, locator_type.value)
+            if wait_seconds > 0:
+                self.wait(wait_seconds)
+        except TimeoutException as ex:
+            logger.error("Failed to click: %s (%s)", selector, locator_type.value)
+            raise ex
