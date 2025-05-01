@@ -129,3 +129,47 @@ class GlobalFunctions:
         except TimeoutException as ex:
             logger.error("Failed to click: %s (%s)", selector, locator_type.value)
             raise ex
+
+    def double_click(self, locator_type: LocatorType, selector: str, wait_seconds: float = 0.2) -> None:
+        """Perform a double-click on an element.
+
+        Args:
+            locator_type: The type of locator (XPATH or ID).
+            selector: The selector string.
+            wait_seconds: Seconds to wait after action (default: 0.2).
+
+        Raises:
+            TimeoutException: If the element is not found.
+            ValueError: If the locator type is invalid.
+        """
+        try:
+            element = self.find_element(locator_type, selector)
+            ActionChains(self.driver).double_click(element).perform()
+            logger.info("Double-clicking element: %s (%s)", selector, locator_type.value)
+            if wait_seconds > 0:
+                self.wait(wait_seconds)
+        except TimeoutException as ex:
+            logger.error("Failed to double-click: %s (%s)", selector, locator_type.value)
+            raise ex
+
+    def right_click(self, locator_type: LocatorType, selector: str, wait_seconds: float = 0.2) -> None:
+        """Perform a right-click on an element.
+
+        Args:
+            locator_type: The type of locator (XPATH or ID).
+            selector: The selector string.
+            wait_seconds: Seconds to wait after action (default: 0.2).
+
+        Raises:
+            TimeoutException: If the element is not found.
+            ValueError: If the locator type is invalid.
+        """
+        try:
+            element = self.find_element(locator_type, selector)
+            ActionChains(self.driver).context_click(element).perform()
+            logger.info("Right-clicking element: %s (%s)", selector, locator_type.value)
+            if wait_seconds > 0:
+                self.wait(wait_seconds)
+        except TimeoutException as ex:
+            logger.error("Failed to right-click: %s (%s)", selector, locator_type.value)
+            raise ex
