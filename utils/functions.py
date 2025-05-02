@@ -173,3 +173,60 @@ class GlobalFunctions:
         except TimeoutException as ex:
             logger.error("Failed to right-click: %s (%s)", selector, locator_type.value)
             raise ex
+
+    def drag_and_drop(self, locator_type: LocatorType, source_selector: str, target_selector: str,
+                      wait_seconds: float = 0.2) -> None:
+        """Drag an element to another element.
+
+        Args:
+            locator_type: The type of locator (XPATH or ID).
+            source_selector: The selector for the source element.
+            target_selector: The selector for the target element.
+            wait_seconds: Seconds to wait after action (default: 0.2).
+
+        Raises:
+            TimeoutException: If either element is not found.
+            ValueError: If the locator type is invalid.
+        """
+        try:
+            source = self.find_element(locator_type, source_selector)
+            target = self.find_element(locator_type, target_selector)
+            ActionChains(self.driver).drag_and_drop(source, target).perform()
+            logger.info("Dragging element %s to %s (%s)", source_selector, target_selector, locator_type.value)
+            if wait_seconds > 0:
+                self.wait(wait_seconds)
+        except TimeoutException as ex:
+            logger.error("Failed to drag and drop: %s to %s (%s)", source_selector, target_selector, locator_type.value)
+            raise ex
+
+    def drag_and_drop_by_offset(self, locator_type: LocatorType, selector: str, x_offset: int, y_offset: int,
+                                frame_index: int = None, wait_seconds: float = 0.2) -> None:
+        """Drag an element to specified coordinates.
+
+        Args:
+            locator_type: The type of locator (XPATH or ID).
+            selector: The selector for the element.
+            x_offset: X-coordinate offset.
+            y_offset: Y-coordinate offset.
+            frame_index: Optional frame index to switch to (default: None).
+            wait_seconds: Seconds to wait after action (default: 0.2).
+
+        Raises:
+            TimeoutException: If the element is not found.
+            ValueError: If the locator type is invalid.
+        """
+        try:
+            if frame_index is not None:
+                self.driver.switch_to.frame(frame_index)
+            element = self.find_element(locator_type, selector)
+            ActionChains(self.driver).drag_and_drop_by_offset(element, x_offset, y_offset).perform()
+            logger.info("Dragging element %s to coordinates (x: %s, y: %s) (%s)",
+                        selector, x_offset, y_offset, locator_type.value)
+            if wait_seconds > 0:
+                self.wait(wait_seconds)
+        except TimeoutException as ex:
+            logger.error("Failed to drag and drop by offset: %s (%s)", selector, locator_type.value)
+            raise ex
+        finally:
+            if frame_index is not None:
+                self.driver.switch_to.default_content()
