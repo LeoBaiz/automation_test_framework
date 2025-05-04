@@ -3,6 +3,10 @@ name: QA Automation Tests
 on:
   workflow_dispatch:  # Ejecución manual
 
+  push:
+    branches:
+      - '**'
+
 jobs:
   test:
     runs-on: ubuntu-latest
