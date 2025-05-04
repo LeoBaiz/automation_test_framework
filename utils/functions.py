@@ -230,3 +230,35 @@ class GlobalFunctions:
         finally:
             if frame_index is not None:
                 self.driver.switch_to.default_content()
+
+    def click_by_offset(self, locator_type: LocatorType, selector: str, x_offset: int, y_offset: int,
+                        frame_index: int = None, wait_seconds: float = 0.2) -> None:
+        """Click at specified coordinates relative to an element.
+
+        Args:
+            locator_type: The type of locator (XPATH or ID).
+            selector: The selector for the element.
+            x_offset: X-coordinate offset.
+            y_offset: Y-coordinate offset.
+            frame_index: Optional frame index to switch to (default: None).
+            wait_seconds: Seconds to wait after action (default: 0.2).
+
+        Raises:
+            TimeoutException: If the element is not found.
+            ValueError: If the locator type is invalid.
+        """
+        try:
+            if frame_index is not None:
+                self.driver.switch_to.frame(frame_index)
+            element = self.find_element(locator_type, selector)
+            ActionChains(self.driver).move_to_element_with_offset(element, x_offset, y_offset).click().perform()
+            logger.info("Clicking at coordinates (x: %s, y: %s) relative to element %s (%s)",
+                        x_offset, y_offset, selector, locator_type.value)
+            if wait_seconds > 0:
+                self.wait(wait_seconds)
+        except TimeoutException as ex:
+            logger.error("Failed to click by offset: %s (%s)", selector, locator_type.value)
+            raise ex
+        finally:
+            if frame_index is not None:
+                self.driver.switch_to.default_content()
